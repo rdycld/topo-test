@@ -1,11 +1,18 @@
-import { type RefObject } from "react";
+import { useEffect, useLayoutEffect, type RefObject } from "react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { type DotType, type Mode } from "@/app/page";
 
 import { useRef, useState } from "react";
 import { useLoader, useThree, type ThreeEvent } from "@react-three/fiber";
-import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import { CylinderGeometry, Group, Mesh, type Vector3 } from "three";
+import { GLTFLoader, OBJLoader } from "three/examples/jsm/Addons.js";
+import {
+  CylinderGeometry,
+  DoubleSide,
+  Group,
+  Mesh,
+  TextureLoader,
+  Vector3,
+} from "three";
 import { dist } from "@/utils";
 import { Route } from "@/componenets/POC/Route";
 import {
@@ -15,6 +22,7 @@ import {
   ringGeometry,
   ringMaterial,
 } from "@/componenets/POC/scene";
+import { Point } from "@react-three/drei";
 
 export type ModelProps = {
   mode: Mode;
@@ -23,12 +31,26 @@ export type ModelProps = {
 };
 
 export const Model = ({ mode, entity, orbitRef }: ModelProps) => {
-  const model = useLoader(GLTFLoader, "/treeLogs.glb");
+  // const model = useLoader(GLTFLoader, "/treeLogs.glb");
+  const texture = useLoader(TextureLoader, "/rock/textures/text1.jpeg");
+  const model = useLoader(OBJLoader, "/rock/source/rock.obj");
   const pointerRef = useRef({ x: 0, y: 0 });
 
   const { scene } = useThree();
 
+  useEffect(() => {
+    model.traverse((child) => {
+      // @ts-ignore
+      if (child.type === "Mesh") child.material.map = texture;
+    });
+  }, [model, texture]);
+
   const [routePoints, setRoutePoints] = useState<Vector3[]>([]);
+  const [normalizedRoutePoints, setNormalizedRoutePoints] = useState<Vector3[]>(
+    []
+  );
+  const [normalizationScale, setNormalizationScale] = useState(0);
+  const [modelScale, setModelScale] = useState(0.2);
   const [rings, setRings] = useState<Vector3[]>([]);
 
   const addRing = (e: ThreeEvent<PointerEvent>) => {
@@ -57,6 +79,8 @@ export const Model = ({ mode, entity, orbitRef }: ModelProps) => {
     dot.position.copy(e.point);
 
     setRoutePoints((points) => [...points, e.point]);
+    // setNormalizedRoutePoints((p) => [...p, e.normal]);
+    console.log(new Vector3().copy(e.point).normalize());
   };
 
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
@@ -134,7 +158,9 @@ export const Model = ({ mode, entity, orbitRef }: ModelProps) => {
 
   return (
     <>
+      <ambientLight />
       <mesh
+        scale={modelScale}
         name={sceneObjects.model}
         {...(mode === "create"
           ? {
@@ -146,7 +172,8 @@ export const Model = ({ mode, entity, orbitRef }: ModelProps) => {
             }
           : {})}
       >
-        <primitive object={model.scene} />
+        <meshBasicMaterial map={texture} />
+        <primitive object={model} />
       </mesh>
       {rings.map((ring, idx) => {
         return (
