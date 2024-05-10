@@ -28,9 +28,17 @@ export type ModelProps = {
   mode: Mode;
   orbitRef: RefObject<OrbitControlsImpl>;
   entity: DotType;
+  onAddPoint: (v: Vector3) => void;
+  modelScale: number;
 };
 
-export const Model = ({ mode, entity, orbitRef }: ModelProps) => {
+export const Model = ({
+  mode,
+  entity,
+  orbitRef,
+  onAddPoint,
+  modelScale,
+}: ModelProps) => {
   // const model = useLoader(GLTFLoader, "/treeLogs.glb");
   const texture = useLoader(TextureLoader, "/rock/textures/text1.jpeg");
   const model = useLoader(OBJLoader, "/rock/source/rock.obj");
@@ -50,7 +58,6 @@ export const Model = ({ mode, entity, orbitRef }: ModelProps) => {
     []
   );
   const [normalizationScale, setNormalizationScale] = useState(0);
-  const [modelScale, setModelScale] = useState(0.2);
   const [rings, setRings] = useState<Vector3[]>([]);
 
   const addRing = (e: ThreeEvent<PointerEvent>) => {
@@ -79,8 +86,7 @@ export const Model = ({ mode, entity, orbitRef }: ModelProps) => {
     dot.position.copy(e.point);
 
     setRoutePoints((points) => [...points, e.point]);
-    // setNormalizedRoutePoints((p) => [...p, e.normal]);
-    console.log(new Vector3().copy(e.point).normalize());
+    onAddPoint(e.point);
   };
 
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {

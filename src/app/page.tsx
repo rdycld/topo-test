@@ -7,6 +7,7 @@ import { OrbitControls } from "@react-three/drei";
 import { HelperDot } from "@/componenets/POC/HelperDot";
 import { HelperConnection } from "@/componenets/POC/HelperConnection";
 import dynamic from "next/dynamic";
+import { Vector3 } from "three";
 
 const Model = dynamic(() =>
   import("@/componenets/POC/Model").then((m) => m.Model)
@@ -62,8 +63,23 @@ type SceneProps = {
   entityType: DotType;
 };
 
+type Route = {
+  normalized: Vector3[];
+  arbitrary: Vector3[];
+};
+
 const Scene = ({ mode, entityType }: SceneProps) => {
   const orbitRef = useRef<OrbitControlsImpl>(null);
+
+  const [route, setRoute] = useState<Route>({ arbitrary: [], normalized: [] });
+  const [scale, setScale] = useState(0.2);
+
+  const handleAddPoint = (v: Vector3) => {
+    setRoute(({ arbitrary, normalized }) => ({
+      arbitrary: [...arbitrary, v],
+      normalized: [...normalized, new Vector3().copy(v).normalize()],
+    }));
+  };
 
   return (
     <main
@@ -76,13 +92,36 @@ const Scene = ({ mode, entityType }: SceneProps) => {
     >
       <Canvas camera={{ position: [8, 8, 8] }}>
         <Suspense fallback={null}>
-          <Model mode={mode} entity={entityType} orbitRef={orbitRef} />
+          <Model
+            modelScale={scale}
+            onAddPoint={handleAddPoint}
+            mode={mode}
+            entity={entityType}
+            orbitRef={orbitRef}
+          />
         </Suspense>
         {mode === "create" && <HelperDot entity={entityType} />}
         {mode === "create" && entityType === "route" && <HelperConnection />}
 
         <OrbitControls ref={orbitRef} />
       </Canvas>
+
+      <input
+        value={scale}
+        onChange={(e) => setScale(e.target.valueAsNumber)}
+        type="range"
+        min={0.1}
+        max={1}
+        step={0.1}
+      ></input>
+      <div>scale: {scale}</div>
+      <button
+        onClick={() => {
+          console.log(route);
+        }}
+      >
+        export route
+      </button>
     </main>
   );
 };
