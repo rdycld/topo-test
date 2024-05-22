@@ -11,7 +11,7 @@ export const sceneObjects = {
   lastDot: "helperDOt",
 };
 
-export const dotGeometry = new SphereGeometry(0.1, 15, 15);
+export const dotGeometry = new SphereGeometry(0.4, 15, 15);
 export const ringGeometry = new BoxGeometry(0.08, 0.08, 0.08);
 
 export const helperMaterial = new MeshBasicMaterial({

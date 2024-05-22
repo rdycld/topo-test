@@ -1,13 +1,13 @@
-import { useEffect, useLayoutEffect, type RefObject } from "react";
+import { useEffect, type RefObject } from "react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { type DotType, type Mode } from "@/app/page";
 
 import { useRef, useState } from "react";
 import { useLoader, useThree, type ThreeEvent } from "@react-three/fiber";
-import { GLTFLoader, OBJLoader } from "three/examples/jsm/Addons.js";
+import { OBJLoader } from "three/examples/jsm/Addons.js";
 import {
+  Box3,
   CylinderGeometry,
-  DoubleSide,
   Group,
   Mesh,
   TextureLoader,
@@ -22,14 +22,14 @@ import {
   ringGeometry,
   ringMaterial,
 } from "@/componenets/POC/scene";
-import { Point } from "@react-three/drei";
 
 export type ModelProps = {
   mode: Mode;
   orbitRef: RefObject<OrbitControlsImpl>;
   entity: DotType;
-  onAddPoint: (v: Vector3) => void;
-  modelScale: number;
+  onAddPoint: (v: Vector3, b: Box3) => void;
+  texturePath: string;
+  modelPath: string;
 };
 
 export const Model = ({
@@ -37,19 +37,22 @@ export const Model = ({
   entity,
   orbitRef,
   onAddPoint,
-  modelScale,
+  modelPath,
+  texturePath,
 }: ModelProps) => {
-  // const model = useLoader(GLTFLoader, "/treeLogs.glb");
-  const texture = useLoader(TextureLoader, "/rock/textures/text1.jpeg");
-  const model = useLoader(OBJLoader, "/rock/source/rock.obj");
+  const texture = useLoader(TextureLoader, texturePath);
+  const model = useLoader(OBJLoader, modelPath);
   const pointerRef = useRef({ x: 0, y: 0 });
 
   const { scene } = useThree();
 
   useEffect(() => {
     model.traverse((child) => {
-      // @ts-ignore
-      if (child.type === "Mesh") child.material.map = texture;
+      if (child instanceof Mesh) {
+        child.material.map = texture;
+        child.material.transparent = true;
+        child.material.opacity = 0.5;
+      }
     });
   }, [model, texture]);
 
@@ -86,7 +89,8 @@ export const Model = ({
     dot.position.copy(e.point);
 
     setRoutePoints((points) => [...points, e.point]);
-    onAddPoint(e.point);
+    const box = new Box3().setFromObject(model);
+    onAddPoint(e.point, box);
   };
 
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
@@ -162,11 +166,19 @@ export const Model = ({
     setRoutePoints((p) => p.map((dot, idx) => (id === idx ? pos : dot)));
   };
 
+  const box = new Box3().setFromObject(model);
+  const center = box.getCenter(new Vector3());
+  model.translateX(-center.x);
+  model.translateY(-center.y);
+  model.translateZ(-center.z);
+
   return (
     <>
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[1, 1, 1]} />
+      </mesh>
       <ambientLight />
       <mesh
-        scale={modelScale}
         name={sceneObjects.model}
         {...(mode === "create"
           ? {
