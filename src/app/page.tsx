@@ -8,6 +8,7 @@ import { HelperDot } from "@/componenets/POC/HelperDot";
 import { HelperConnection } from "@/componenets/POC/HelperConnection";
 import dynamic from "next/dynamic";
 import { Vector3, type Box3 } from "three";
+import { useStorage } from "@/useStorage";
 
 const Model = dynamic(() =>
   import("@/componenets/POC/Model").then((m) => m.Model)
@@ -34,7 +35,6 @@ export default function Poc() {
   const [mode, setMode] = useState<Mode>("create");
   const [entityType, setEntityType] = useState<DotType>("route");
   const [currentModel, setCurrentModel] = useState(models[0]);
-  const [modelName, setModelName] = useState("");
 
   return (
     <div className={styles.container}>
@@ -94,23 +94,11 @@ type Route = {
 const Scene = ({ mode, entityType, currModel }: SceneProps) => {
   const orbitRef = useRef<OrbitControlsImpl>(null);
 
+  const { routes, readRoutes, writeRoute, deleteRoute } = useStorage();
+
   const [newRouteName, setNewRouteName] = useState("");
-  const [routes, setRoutes] = useState<
-    { points: Route; name: string; id: number }[]
-  >([]);
 
   const [route, setRoute] = useState<Route>({ arbitrary: [], normalized: [] });
-
-  useEffect(() => {
-    const f = async () => {
-      const resp = await fetch(`/models/${"id"}/routes`);
-
-      if (resp.ok) {
-        const d = await resp.json();
-        setRoutes(d);
-      }
-    };
-  }, []);
 
   const handleAddPoint = (v: Vector3, box: Box3) => {
     const size = box.getSize(new Vector3());
@@ -137,15 +125,61 @@ const Scene = ({ mode, entityType, currModel }: SceneProps) => {
       body: JSON.stringify({ name: newRouteName, points: route }),
     });
   };
+  console.log(routes);
 
   return (
     <>
-      <div>
-        {routes.map((route) => (
-          <button key={route.id} onClick={() => handleSetRoute(route.points)}>
-            {route.name}
-          </button>
+      <div
+        style={{
+          display: "flex",
+          columnGap: "20px",
+        }}
+      >
+        {routes.map((route, idx) => (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              fontSize: "20px",
+              rowGap: 10,
+              alignItems: "flex-start",
+            }}
+            key={idx}
+          >
+            <button
+              style={{ fontSize: "20px" }}
+              onClick={() => handleSetRoute(route.points)}
+            >
+              set {route.name}
+            </button>
+            <button
+              style={{ fontSize: "20px" }}
+              onClick={() => deleteRoute(route.name)}
+            >
+              delete {route.name}
+            </button>
+          </div>
         ))}
+      </div>
+      <div style={{ display: "flex", gap: "20px" }}>
+        <input
+          type="text"
+          value={newRouteName}
+          onChange={({ target }) => setNewRouteName(target.value)}
+        />
+        <button
+          disabled={!newRouteName.length || route.arbitrary.length < 4}
+          onClick={() => writeRoute({ points: route, name: newRouteName })}
+        >
+          add route
+        </button>
+        <button
+          onClick={() => {
+            console.log(route);
+          }}
+        >
+          log route
+        </button>
       </div>
       <main
         style={{
@@ -158,6 +192,9 @@ const Scene = ({ mode, entityType, currModel }: SceneProps) => {
         <Canvas camera={{ position: [8, 8, 8] }}>
           <Suspense fallback={null}>
             <Model
+              routePoints={route.arbitrary.map(
+                (x) => new Vector3(...Object.values(x))
+              )}
               modelPath={currModel.modelPath}
               texturePath={currModel.texturePath}
               onAddPoint={handleAddPoint}
@@ -171,25 +208,6 @@ const Scene = ({ mode, entityType, currModel }: SceneProps) => {
 
           <OrbitControls ref={orbitRef} />
         </Canvas>
-
-        <input
-          type="text"
-          value={newRouteName}
-          onChange={({ target }) => setNewRouteName(target.value)}
-        />
-        <button
-          disabled={!newRouteName.length || route.arbitrary.length < 4}
-          onClick={handleAddRoute}
-        >
-          add route
-        </button>
-        <button
-          onClick={() => {
-            console.log(route);
-          }}
-        >
-          log route
-        </button>
       </main>
     </>
   );

@@ -30,6 +30,7 @@ export type ModelProps = {
   onAddPoint: (v: Vector3, b: Box3) => void;
   texturePath: string;
   modelPath: string;
+  routePoints: any;
 };
 
 export const Model = ({
@@ -39,6 +40,7 @@ export const Model = ({
   onAddPoint,
   modelPath,
   texturePath,
+  routePoints,
 }: ModelProps) => {
   const texture = useLoader(TextureLoader, texturePath);
   const model = useLoader(OBJLoader, modelPath);
@@ -56,11 +58,6 @@ export const Model = ({
     });
   }, [model, texture]);
 
-  const [routePoints, setRoutePoints] = useState<Vector3[]>([]);
-  const [normalizedRoutePoints, setNormalizedRoutePoints] = useState<Vector3[]>(
-    []
-  );
-  const [normalizationScale, setNormalizationScale] = useState(0);
   const [rings, setRings] = useState<Vector3[]>([]);
 
   const addRing = (e: ThreeEvent<PointerEvent>) => {
@@ -88,7 +85,7 @@ export const Model = ({
     const dot = new Mesh(dotGeometry, routeDotMaterial);
     dot.position.copy(e.point);
 
-    setRoutePoints((points) => [...points, e.point]);
+    // setRoutePoints((points) => [...points, e.point]);
     const box = new Box3().setFromObject(model);
     onAddPoint(e.point, box);
   };
@@ -162,9 +159,9 @@ export const Model = ({
     helperConnection.visible = true;
   };
 
-  const handleDotTranslate = (id: number, pos: Vector3) => {
-    setRoutePoints((p) => p.map((dot, idx) => (id === idx ? pos : dot)));
-  };
+  // const handleDotTranslate = (id: number, pos: Vector3) => {
+  //   setRoutePoints((p) => p.map((dot, idx) => (id === idx ? pos : dot)));
+  // };
 
   const box = new Box3().setFromObject(model);
   const center = box.getCenter(new Vector3());
@@ -207,7 +204,8 @@ export const Model = ({
         points={routePoints}
         mode={mode}
         orbitRef={orbitRef}
-        onDotTranslate={handleDotTranslate}
+        // onDotTranslate={handleDotTranslate}
+        onDotTranslate={() => {}}
       />
     </>
   );
