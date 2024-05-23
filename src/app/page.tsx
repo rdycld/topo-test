@@ -125,7 +125,6 @@ const Scene = ({ mode, entityType, currModel }: SceneProps) => {
       body: JSON.stringify({ name: newRouteName, points: route }),
     });
   };
-  console.log(routes);
 
   return (
     <>

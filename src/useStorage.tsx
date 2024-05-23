@@ -6,25 +6,24 @@ type R = {
 };
 export const useStorage = () => {
   const [routes, setRoutes] = useState<R[]>([]);
-  const storage = window?.localStorage;
 
   const readRoutes = useCallback(() => {
-    const routes = storage.getItem("routes");
+    const routes = localStorage.getItem("routes");
     if (!routes) return;
     setRoutes(JSON.parse(routes) as R[]);
-  }, [storage]);
+  }, []);
 
   const writeRoute = (r: R) => {
     const rr = [...routes, r];
     setRoutes(rr);
-    storage.setItem("routes", JSON.stringify(rr));
+    localStorage.setItem("routes", JSON.stringify(rr));
   };
 
   const deleteRoute = (n: string) => {
     const rr = routes.filter(({ name }) => name !== n);
 
     setRoutes(rr);
-    storage.setItem("routes", JSON.stringify(rr));
+    localStorage.setItem("routes", JSON.stringify(rr));
   };
 
   useEffect(() => {
