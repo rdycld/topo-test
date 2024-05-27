@@ -51,8 +51,8 @@ const models = [
   },
   {
     name: "kwarc4 - good light",
-    texturePath: "/models/kwarc4/goodLight.mtl",
-    modelPath: "/models/kwarc4/goodLight.obj",
+    texturePath: "/models/kwarc4/goodLight2.mtl",
+    modelPath: "/models/kwarc4/goodLight2.obj",
   },
 ];
 
