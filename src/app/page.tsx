@@ -29,6 +29,16 @@ const models = [
     texturePath: "/models/cube/cube.jpeg",
     modelPath: "/models/cube/cube.obj",
   },
+  {
+    name: "trojan",
+    texturePath: "/models/trojan/trojan.mtl",
+    modelPath: "/models/trojan/trojan.obj",
+  },
+  {
+    name: "kwarc1",
+    texturePath: "/models/kwarc1/kwarc1.mtl",
+    modelPath: "/models/kwarc1/kwarc1.obj",
+  },
 ];
 
 export default function Poc() {
@@ -99,6 +109,7 @@ const Scene = ({ mode, entityType, currModel }: SceneProps) => {
   const [newRouteName, setNewRouteName] = useState("");
 
   const [route, setRoute] = useState<Route>({ arbitrary: [], normalized: [] });
+  const [scale, setScale] = useState("1");
 
   const handleAddPoint = (v: Vector3, box: Box3) => {
     const size = box.getSize(new Vector3());
@@ -174,11 +185,24 @@ const Scene = ({ mode, entityType, currModel }: SceneProps) => {
         </button>
         <button
           onClick={() => {
-            console.log(route);
+            console.log(route, scale);
           }}
         >
           log route
         </button>
+      </div>
+      <div>
+        <input
+          type="range"
+          max={"5"}
+          min={"0.1"}
+          step={"0.1"}
+          value={scale}
+          onChange={(e) => {
+            setScale(e.target.value);
+          }}
+        />
+        scale: {scale}
       </div>
       <main
         style={{
@@ -191,11 +215,12 @@ const Scene = ({ mode, entityType, currModel }: SceneProps) => {
         <Canvas camera={{ position: [8, 8, 8] }}>
           <Suspense fallback={null}>
             <Model
+              scale={scale}
               routePoints={route.arbitrary.map(
                 (x) => new Vector3(...Object.values(x))
               )}
               modelPath={currModel.modelPath}
-              texturePath={currModel.texturePath}
+              mtlPath={currModel.texturePath}
               onAddPoint={handleAddPoint}
               mode={mode}
               entity={entityType}

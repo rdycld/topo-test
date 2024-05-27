@@ -4,7 +4,7 @@ import { type DotType, type Mode } from "@/app/page";
 
 import { useRef, useState } from "react";
 import { useLoader, useThree, type ThreeEvent } from "@react-three/fiber";
-import { OBJLoader } from "three/examples/jsm/Addons.js";
+import { MTLLoader, OBJLoader } from "three/examples/jsm/Addons.js";
 import {
   Box3,
   CylinderGeometry,
@@ -28,9 +28,11 @@ export type ModelProps = {
   orbitRef: RefObject<OrbitControlsImpl>;
   entity: DotType;
   onAddPoint: (v: Vector3, b: Box3) => void;
-  texturePath: string;
+  // texturePath: string;
+  mtlPath: string;
   modelPath: string;
   routePoints: any;
+  scale: string;
 };
 
 export const Model = ({
@@ -39,24 +41,30 @@ export const Model = ({
   orbitRef,
   onAddPoint,
   modelPath,
-  texturePath,
+  // texturePath,
+  mtlPath,
+  scale,
   routePoints,
 }: ModelProps) => {
-  const texture = useLoader(TextureLoader, texturePath);
-  const model = useLoader(OBJLoader, modelPath);
+  const materials = useLoader(MTLLoader, mtlPath);
+  const model = useLoader(OBJLoader, modelPath, (loader) => {
+    materials.preload();
+    loader.setMaterials(materials);
+  });
+
   const pointerRef = useRef({ x: 0, y: 0 });
 
   const { scene } = useThree();
 
-  useEffect(() => {
-    model.traverse((child) => {
-      if (child instanceof Mesh) {
-        child.material.map = texture;
-        child.material.transparent = true;
-        child.material.opacity = 0.5;
-      }
-    });
-  }, [model, texture]);
+  // useEffect(() => {
+  //   model.traverse((child) => {
+  //     if (child instanceof Mesh) {
+  //       child.material.map = texture;
+  //       child.material.transparent = true;
+  //       child.material.opacity = 0.5;
+  //     }
+  //   });
+  // }, [model, texture]);
 
   const [rings, setRings] = useState<Vector3[]>([]);
 
@@ -168,6 +176,7 @@ export const Model = ({
   model.translateX(-center.x);
   model.translateY(-center.y);
   model.translateZ(-center.z);
+  console.log(box.getSize(new Vector3()));
 
   return (
     <>
@@ -176,6 +185,7 @@ export const Model = ({
       </mesh>
       <ambientLight />
       <mesh
+        scale={Number(scale)}
         name={sceneObjects.model}
         {...(mode === "create"
           ? {
@@ -187,7 +197,6 @@ export const Model = ({
             }
           : {})}
       >
-        <meshBasicMaterial map={texture} />
         <primitive object={model} />
       </mesh>
       {rings.map((ring, idx) => {
