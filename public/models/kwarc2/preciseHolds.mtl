@@ -1,0 +1,12 @@
+# Created by Polycam
+# object name: Dokładne chwyty 
+newmtl Dokładne chwyty _0
+Ka 0.000 0.000 0.000
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+Tr 0.000000
+illum 1
+Ns 1.000000
+map_Kd Dokładne chwyty _2_OvfDvuJ0.jpg
+normal Dokładne chwyty _0_OvfDvuJ0.jpg
+map_ao Dokładne chwyty _1_OvfDvuJ0.jpg

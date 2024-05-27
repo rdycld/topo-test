@@ -16,7 +16,7 @@ export const Connection = ({ start, end }: ConnectionProps) => {
   return (
     <group position={pPos} onUpdate={(self) => self.lookAt(end)}>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.3, 0.3, distance]} />
+        <cylinderGeometry args={[0.01, 0.01, distance]} />
         <meshBasicMaterial color={0xff0000} />
       </mesh>
     </group>

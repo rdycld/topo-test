@@ -39,6 +39,21 @@ const models = [
     texturePath: "/models/kwarc1/kwarc1.mtl",
     modelPath: "/models/kwarc1/kwarc1.obj",
   },
+  {
+    name: "kwarc1 - precise holds",
+    texturePath: "/models/kwarc2/preciseHolds.mtl",
+    modelPath: "/models/kwarc2/preciseHolds.obj",
+  },
+  {
+    name: "kwarc3 - far away",
+    texturePath: "/models/kwarc3/farAway.mtl",
+    modelPath: "/models/kwarc3/farAway.obj",
+  },
+  {
+    name: "kwarc4 - good light",
+    texturePath: "/models/kwarc4/goodLight.mtl",
+    modelPath: "/models/kwarc4/goodLight.obj",
+  },
 ];
 
 export default function Poc() {
