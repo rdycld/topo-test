@@ -20,24 +20,9 @@ export type DotType = "route" | "ring" | "info";
 
 const models = [
   {
-    name: "rock",
-    texturePath: "/models/rock/rock.jpeg",
-    modelPath: "/models/rock/rock.obj",
-  },
-  {
     name: "cube",
     texturePath: "/models/cube/cube.jpeg",
     modelPath: "/models/cube/cube.obj",
-  },
-  {
-    name: "trojan",
-    texturePath: "/models/trojan/trojan.mtl",
-    modelPath: "/models/trojan/trojan.obj",
-  },
-  {
-    name: "kwarc1",
-    texturePath: "/models/kwarc1/kwarc1.mtl",
-    modelPath: "/models/kwarc1/kwarc1.obj",
   },
   {
     name: "kwarc1 - precise holds",
@@ -45,14 +30,9 @@ const models = [
     modelPath: "/models/kwarc2/preciseHolds.obj",
   },
   {
-    name: "kwarc3 - far away",
-    texturePath: "/models/kwarc3/farAway.mtl",
-    modelPath: "/models/kwarc3/farAway.obj",
-  },
-  {
     name: "kwarc4 - good light",
-    texturePath: "/models/kwarc4/goodLight2.mtl",
-    modelPath: "/models/kwarc4/goodLight2.obj",
+    texturePath: "/models/kwarc4/kwarc4.mtl",
+    modelPath: "/models/kwarc4/kwarc4.obj",
   },
 ];
 
