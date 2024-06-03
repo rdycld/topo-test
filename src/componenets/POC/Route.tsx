@@ -11,12 +11,14 @@ type RouteProps = {
   mode: Mode;
   orbitRef: RefObject<OrbitControlsImpl>;
   onDotTranslate: (pos: Vector3, id: number) => void;
+  onRemove: (id: number) => void;
 };
 
 export const Route = ({
   points,
   mode,
   orbitRef,
+  onRemove,
   onDotTranslate,
 }: RouteProps) => {
   return (
@@ -25,6 +27,7 @@ export const Route = ({
         {points.map((point, idx, arr) => (
           <RouteDot
             onTranslateEnd={onDotTranslate}
+            onRemove={onRemove}
             orbitRef={orbitRef}
             key={idx}
             id={idx}

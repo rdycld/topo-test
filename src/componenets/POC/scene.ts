@@ -23,6 +23,9 @@ export const helperMaterial = new MeshBasicMaterial({
 export const routeDotMaterial = new MeshBasicMaterial({
   color: 0x00ff00,
 });
+export const routeDotMaterialHover = new MeshBasicMaterial({
+  color: 0xff0000,
+});
 
 export const ringMaterial = new MeshBasicMaterial({
   color: 0xffff00,

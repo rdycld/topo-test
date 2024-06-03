@@ -134,6 +134,13 @@ const Scene = ({ mode, entityType, currModel }: SceneProps) => {
     }));
   };
 
+  const handleRemovePoint = (id: number) => {
+    setRoute(({ arbitrary, normalized }) => ({
+      arbitrary: arbitrary.filter((_, idx) => idx !== id),
+      normalized: normalized.filter((_, idx) => idx !== id),
+    }));
+  };
+
   const handleSetRoute = (points: Route) => {
     setRoute(points);
   };
@@ -217,6 +224,7 @@ const Scene = ({ mode, entityType, currModel }: SceneProps) => {
           <Suspense fallback={null}>
             <Model
               onPointEdit={handleEditPoint}
+              onPointRemove={handleRemovePoint}
               scale={scale}
               routePoints={route.arbitrary.map(
                 (x) => new Vector3(...Object.values(x))

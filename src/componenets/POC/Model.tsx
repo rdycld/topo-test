@@ -29,6 +29,7 @@ export type ModelProps = {
   entity: DotType;
   onAddPoint: (v: Vector3, b: Box3) => void;
   onPointEdit: (v: Vector3, b: Box3, id: number) => void;
+  onPointRemove: (id: number) => void;
   mtlPath: string;
   modelPath: string;
   routePoints: any;
@@ -41,6 +42,7 @@ export const Model = ({
   orbitRef,
   onAddPoint,
   onPointEdit,
+  onPointRemove,
   modelPath,
   mtlPath,
   scale,
@@ -53,6 +55,7 @@ export const Model = ({
   });
 
   const pointerRef = useRef({ x: 0, y: 0 });
+  const disableAddPoint = useRef(false);
 
   const { scene } = useThree();
 
@@ -68,6 +71,20 @@ export const Model = ({
 
   const handlePointerUp = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
+
+    if (disableAddPoint.current) {
+      disableAddPoint.current = false;
+      return;
+    }
+    const intersections = e.intersections;
+
+    if (
+      intersections.some(
+        (el) => el.object.name === "dot" || el.object.name === "helperDOt"
+      )
+    ) {
+      return;
+    }
 
     if (dist(pointerRef.current, { x: e.clientX, y: e.clientY }) > 15) return;
 
@@ -161,8 +178,6 @@ export const Model = ({
     helperConnection.visible = true;
   };
 
-  const handleDotTranslate = (id: number, pos: Vector3) => {};
-
   const box = new Box3().setFromObject(model);
   const center = box.getCenter(new Vector3());
   model.translateX(-center.x);
@@ -185,6 +200,9 @@ export const Model = ({
               onPointerEnter: handlePointerEnter,
               onPointerDown: handlePointerDown,
               onPointerUp: handlePointerUp,
+              onContextMenu: () => {
+                disableAddPoint.current = true;
+              },
             }
           : {})}
       >
@@ -205,6 +223,7 @@ export const Model = ({
         mode={mode}
         orbitRef={orbitRef}
         onDotTranslate={handleEditPoint}
+        onRemove={onPointRemove}
       />
     </>
   );
