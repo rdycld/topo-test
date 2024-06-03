@@ -11,7 +11,7 @@ type RouteDotProps = {
   position: Vector3;
   mode: Mode;
   orbitRef: RefObject<OrbitControlsImpl>;
-  onTranslate: (id: number, pos: Vector3) => void;
+  onTranslateEnd: (pos: Vector3, id: number) => void;
   id: number;
 };
 
@@ -20,7 +20,7 @@ export const RouteDot = ({
   position,
   mode,
   orbitRef,
-  onTranslate,
+  onTranslateEnd,
   id,
 }: RouteDotProps) => {
   const transformRef = useRef<TransformControlsImpl>(null);
@@ -39,7 +39,7 @@ export const RouteDot = ({
       orbitRef.current.enabled = !value;
 
       if (!value && dotRef.current) {
-        onTranslate(id, dotRef.current.position);
+        onTranslateEnd(dotRef.current.position, id);
       }
     };
 

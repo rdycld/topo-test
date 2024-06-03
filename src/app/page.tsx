@@ -99,7 +99,7 @@ type Route = {
 const Scene = ({ mode, entityType, currModel }: SceneProps) => {
   const orbitRef = useRef<OrbitControlsImpl>(null);
 
-  const { routes, readRoutes, writeRoute, deleteRoute } = useStorage();
+  const { routes, writeRoute, deleteRoute } = useStorage();
 
   const [newRouteName, setNewRouteName] = useState("");
 
@@ -118,18 +118,24 @@ const Scene = ({ mode, entityType, currModel }: SceneProps) => {
     }));
   };
 
-  const handleSetRoute = (points: Route) => {
-    setRoute(points);
+  const handleEditPoint = (v: Vector3, box: Box3, id: number) => {
+    const size = box.getSize(new Vector3());
+    setRoute(({ arbitrary, normalized }) => ({
+      arbitrary: arbitrary.map((el, idx) => (id === idx ? v : el)),
+      normalized: normalized.map((el, idx) =>
+        id === idx
+          ? new Vector3(
+              v.x / (size.x / 2),
+              v.y / (size.y / 2),
+              v.z / (size.z / 2)
+            )
+          : el
+      ),
+    }));
   };
 
-  const handleAddRoute = async () => {
-    const response = await fetch(`/models/:modelId/routes/add`, {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: newRouteName, points: route }),
-    });
+  const handleSetRoute = (points: Route) => {
+    setRoute(points);
   };
 
   return (
@@ -210,6 +216,7 @@ const Scene = ({ mode, entityType, currModel }: SceneProps) => {
         <Canvas camera={{ position: [8, 8, 8] }}>
           <Suspense fallback={null}>
             <Model
+              onPointEdit={handleEditPoint}
               scale={scale}
               routePoints={route.arbitrary.map(
                 (x) => new Vector3(...Object.values(x))

@@ -10,7 +10,7 @@ type RouteProps = {
   points: Vector3[];
   mode: Mode;
   orbitRef: RefObject<OrbitControlsImpl>;
-  onDotTranslate: (id: number, pos: Vector3) => void;
+  onDotTranslate: (pos: Vector3, id: number) => void;
 };
 
 export const Route = ({
@@ -24,7 +24,7 @@ export const Route = ({
       <group name={sceneObjects.route}>
         {points.map((point, idx, arr) => (
           <RouteDot
-            onTranslate={onDotTranslate}
+            onTranslateEnd={onDotTranslate}
             orbitRef={orbitRef}
             key={idx}
             id={idx}

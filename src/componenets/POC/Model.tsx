@@ -28,7 +28,7 @@ export type ModelProps = {
   orbitRef: RefObject<OrbitControlsImpl>;
   entity: DotType;
   onAddPoint: (v: Vector3, b: Box3) => void;
-  // texturePath: string;
+  onPointEdit: (v: Vector3, b: Box3, id: number) => void;
   mtlPath: string;
   modelPath: string;
   routePoints: any;
@@ -40,8 +40,8 @@ export const Model = ({
   entity,
   orbitRef,
   onAddPoint,
+  onPointEdit,
   modelPath,
-  // texturePath,
   mtlPath,
   scale,
   routePoints,
@@ -55,16 +55,6 @@ export const Model = ({
   const pointerRef = useRef({ x: 0, y: 0 });
 
   const { scene } = useThree();
-
-  // useEffect(() => {
-  //   model.traverse((child) => {
-  //     if (child instanceof Mesh) {
-  //       child.material.map = texture;
-  //       child.material.transparent = true;
-  //       child.material.opacity = 0.5;
-  //     }
-  //   });
-  // }, [model, texture]);
 
   const [rings, setRings] = useState<Vector3[]>([]);
 
@@ -93,9 +83,13 @@ export const Model = ({
     const dot = new Mesh(dotGeometry, routeDotMaterial);
     dot.position.copy(e.point);
 
-    // setRoutePoints((points) => [...points, e.point]);
     const box = new Box3().setFromObject(model);
     onAddPoint(e.point, box);
+  };
+
+  const handleEditPoint = (pos: Vector3, id: number) => {
+    const box = new Box3().setFromObject(model);
+    onPointEdit(pos, box, id);
   };
 
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
@@ -167,16 +161,13 @@ export const Model = ({
     helperConnection.visible = true;
   };
 
-  // const handleDotTranslate = (id: number, pos: Vector3) => {
-  //   setRoutePoints((p) => p.map((dot, idx) => (id === idx ? pos : dot)));
-  // };
+  const handleDotTranslate = (id: number, pos: Vector3) => {};
 
   const box = new Box3().setFromObject(model);
   const center = box.getCenter(new Vector3());
   model.translateX(-center.x);
   model.translateY(-center.y);
   model.translateZ(-center.z);
-  console.log(box.getSize(new Vector3()));
 
   return (
     <>
@@ -213,8 +204,7 @@ export const Model = ({
         points={routePoints}
         mode={mode}
         orbitRef={orbitRef}
-        // onDotTranslate={handleDotTranslate}
-        onDotTranslate={() => {}}
+        onDotTranslate={handleEditPoint}
       />
     </>
   );
